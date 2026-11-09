@@ -117,6 +117,16 @@ public struct AIProviderConfig: Codable, Sendable {
         }
     }
 
+    /// Aktif sağlayıcının varsayılan base URL'i
+    public var defaultBaseURL: String {
+        selectedProvider.defaultBaseURL
+    }
+
+    /// Aktif sağlayıcının varsayılan model adı
+    public var defaultModelName: String {
+        selectedProvider.defaultModelName
+    }
+
     /// Aktif sağlayıcının API anahtarı girilmiş mi?
     public var hasValidKeyForCurrentProvider: Bool {
         if selectedProvider == .offlineSimulator {
