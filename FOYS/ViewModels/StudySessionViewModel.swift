@@ -22,6 +22,7 @@ public final class StudySessionViewModel: ObservableObject {
     @Published public var isGeneratingQuiz: Bool = false
     @Published public var proofImage: UIImage? = nil
     @Published public var aiNotesSummary: String = ""
+    @Published public var currentQuizVM: AIQuizViewModel = AIQuizViewModel()
 
     private var sessionTimer: AnyCancellable?
     private let screenTime = ScreenTimeManager.shared
@@ -177,7 +178,7 @@ public final class StudySessionViewModel: ObservableObject {
         self.showProofModal = false
 
         // Quiz ekranını aç
-        AIQuizViewModel_Shared = AIQuizViewModel(questions: questions)
+        self.currentQuizVM = AIQuizViewModel(questions: questions)
         self.showQuizModal = true
     }
 
@@ -256,7 +257,3 @@ public final class StudySessionViewModel: ObservableObject {
         }
     }
 }
-
-// Global reference for modal synchronization
-@MainActor
-public var AIQuizViewModel_Shared: AIQuizViewModel = AIQuizViewModel()

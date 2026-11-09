@@ -61,7 +61,7 @@ public struct ActiveSessionView: View {
                 ProofUploadView(sessionVM: sessionVM)
             }
             .sheet(isPresented: $sessionVM.showQuizModal) {
-                AIQuizView(sessionVM: sessionVM, quizVM: AIQuizViewModel_Shared)
+                AIQuizView(sessionVM: sessionVM, quizVM: sessionVM.currentQuizVM)
             }
             .fullScreenCover(isPresented: $sessionVM.showScreenSaver) {
                 DeskClockScreenSaverView(sessionVM: sessionVM)
