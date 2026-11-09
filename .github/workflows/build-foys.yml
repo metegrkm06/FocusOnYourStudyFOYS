@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-ipa:
     name: Build & Package FOYS IPA
@@ -23,6 +26,7 @@ jobs:
         run: |
           sw_vers
           xcodebuild -version
+          xcodebuild -list
 
       - name: Cache DerivedData
         uses: actions/cache@v4
@@ -60,6 +64,17 @@ jobs:
           grep -i "error:" xcodebuild.log || true
           echo "=== LAST 80 LINES OF BUILD LOG ==="
           tail -n 80 xcodebuild.log
+
+      - name: Push failure log to branch
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B ci-failure-log
+          cp xcodebuild.log xcodebuild_error.log
+          git add xcodebuild_error.log
+          git commit -m "Auto-capture xcodebuild failure log" || true
+          git push -f origin ci-failure-log || true
 
       - name: Upload Build Log on Failure
         if: failure()
