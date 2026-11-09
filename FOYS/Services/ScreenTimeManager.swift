@@ -136,8 +136,8 @@ public final class ScreenTimeManager: ObservableObject, @unchecked Sendable {
         #if canImport(ManagedSettings)
         if #available(iOS 16.0, *) {
             // ManagedSettingsStore shield etkinleştirilir
-            // Tüm sosyal ve eğlence kategorileri veya seçili uygulamalar kilitlenir
-            managedStore.shield.applicationCategories = ShieldSettings.ActivityCategoryPolicy.all()
+            // Tüm dikkat dağıtıcı kategoriler kilitlenir
+            managedStore.shield.applicationCategories = .all()
         }
         #endif
 

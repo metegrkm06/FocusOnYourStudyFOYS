@@ -40,7 +40,7 @@ public final class NotificationService: NSObject, ObservableObject, @unchecked S
         let content = UNMutableNotificationContent()
         content.title = "Ders Süresi Tamamlandı! 🎯"
         content.body = "\(subject) - \(topic) çalışman bitti. Uygulamaların kilidini açmak için çalışma kanıtını yükle ve testi çöz!"
-        content.sound = .defaultRingtone
+        content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(seconds), repeats: false)
         let request = UNNotificationRequest(identifier: "foys_session_done", content: content, trigger: trigger)
