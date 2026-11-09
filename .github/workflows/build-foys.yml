@@ -1,0 +1,69 @@
+name: Build FOYS iOS IPA
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ipa:
+    name: Build & Package FOYS IPA
+    runs-on: macos-14 # Apple Silicon M1/M2 runner
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.4'
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-xcode-foys-${{ hashFiles('FOYS.xcodeproj/**') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-foys-
+
+      - name: Build Archive (Unsigned for Sideloading / AltStore / Sideloadly)
+        run: |
+          echo "Starting xcodebuild archive for FOYS..."
+          set -o pipefail
+          xcodebuild archive \
+            -project FOYS.xcodeproj \
+            -scheme FOYS \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/FOYS.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee xcodebuild.log
+
+      - name: Upload Build Log on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FOYS-build-log
+          path: xcodebuild.log
+
+      - name: Package .IPA file
+        run: |
+          echo "Packaging .app into .ipa (Payload structure)..."
+          mkdir -p build/ipa-package/Payload
+          cp -r "build/FOYS.xcarchive/Products/Applications/FOYS.app" "build/ipa-package/Payload/"
+          cd build/ipa-package
+          zip -r -9 ../FOYS.ipa Payload
+          cd ../..
+          echo "Successfully created build/FOYS.ipa"
+          ls -lh build/FOYS.ipa
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FOYS-iOS-IPA
+          path: build/FOYS.ipa
+          if-no-files-found: error
+          retention-days: 14
