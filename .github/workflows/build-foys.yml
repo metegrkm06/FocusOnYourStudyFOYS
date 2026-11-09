@@ -8,7 +8,7 @@ on:
 jobs:
   build-ipa:
     name: Build & Package FOYS IPA
-    runs-on: macos-14 # Apple Silicon M1/M2 runner
+    runs-on: macos-latest # Standard Apple Silicon runner
 
     steps:
       - name: Checkout Source Code
@@ -17,7 +17,12 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '15.4'
+          xcode-version: 'latest-stable'
+
+      - name: Verify Environment
+        run: |
+          sw_vers
+          xcodebuild -version
 
       - name: Cache DerivedData
         uses: actions/cache@v4
